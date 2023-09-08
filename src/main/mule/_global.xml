@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="e4248221-b426-4b72-a0bc-4a5f7ded6991" file="config.yaml" />
+	<http:listener-config name="generalHttpListenerConfig" doc:name="HTTP Listener config" doc:id="3bdbbb2e-4bda-403d-8248-383847f1d65a" >
+		<http:listener-connection host="0.0.0.0" port="${http.webPort}" />
+	</http:listener-config>
+	<http:listener-config name="resourcesHttpListenerConfig" doc:name="HTTP Listener config" doc:id="94fd892c-9871-4a46-b5b3-bb25918cec53" >
+		<http:listener-connection host="localhost" port="${http.resourcesPort}" />
+	</http:listener-config>
+	<file:config name="resourcesFileConfig" doc:name="File Config" doc:id="f6195d5f-441b-448a-9a40-4d650b1cd816" >
+		<file:connection workingDir="${app.home}" />
+	</file:config>
+</mule>

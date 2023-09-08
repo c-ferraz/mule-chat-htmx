@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<flow name="simple-chat-htmxFlow" doc:id="212e1ca7-88ba-45ad-8011-f7a70c005e14" >
+		<http:listener doc:name="Listener" doc:id="1bb5f8fe-bdf8-47ad-b99f-1c157f62e0f7" path="/hello" config-ref="generalHttpListenerConfig"/>
+		<parse-template doc:name="Parse Template" doc:id="5a51da59-360a-438f-9ab1-2d112a5abd03" location="web/index.html"/>
+	</flow>
+	<flow name="contact-form-get" doc:id="75397482-4f56-498d-8e8e-1cd2e811549d" >
+		<http:listener doc:name="Listener" doc:id="c09531ba-0e1e-4623-b6fb-d7025e443497" config-ref="generalHttpListenerConfig" path="/contact/*"/>
+		<choice doc:name="Choice" doc:id="98fbcdd5-18dd-4e8e-b5dc-42a967d4c368" >
+			<when expression='#[attributes.requestUri == "/contact/1" and attributes.method == "GET"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="4f9773d9-40f5-4fe9-bad5-d69f73cb1cac" message="GET NO EDIT"/>
+				<os:retrieve doc:name="contact" doc:id="5594e363-c2a0-40ab-b7a1-21ee809ded56" key="contact">
+					<os:default-value ><![CDATA[#[{
+  "firstName": "Joe",
+  "lastName": "Blow",
+  "email": "joe@blow.com"
+}]]]></os:default-value>
+				</os:retrieve>
+				<set-payload value="#[output xml --- read('&lt;div hx-target=&quot;this&quot; hx-swap=&quot;outerHTML&quot;&gt;&#10;    &lt;div&gt;&lt;label&gt;First Name&lt;/label&gt;: $(payload.firstName)&lt;/div&gt;&#10;    &lt;div&gt;&lt;label&gt;Last Name&lt;/label&gt;: $(payload.lastName)&lt;/div&gt;&#10;    &lt;div&gt;&lt;label&gt;Email&lt;/label&gt;: $(payload.email) &lt;/div&gt;&#10;    &lt;button hx-get=&quot;/contact/1/edit&quot; class=&quot;btn btn-primary&quot;&gt;&#10;    Click To Edit&#10;    &lt;/button&gt;&#10;&lt;/div&gt;', 'application/xml')]" doc:name="Set Payload" doc:id="89c0fb1b-c14b-43be-bcb9-780ec6431678" mimeType="text/html" />
+			</when>
+			<when expression='#[attributes.requestUri == "/contact/1/edit" and attributes.method == "GET"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="4be96d82-fd0e-4f56-b803-9ad94fd66e6c" message="GET EDIT" />
+				<os:retrieve doc:name="contact" doc:id="d7ff945a-9fa4-47a3-bfd4-fb6f6cfae285" key="contact" >
+					<os:default-value ><![CDATA[#[{
+  "firstName": "Joe",
+  "lastName": "Blow",
+  "email": "joe@blow.com"
+}]]]></os:default-value>
+				</os:retrieve>
+				<set-payload value="#[output xml --- read('&lt;form hx-put=&quot;/contact/1&quot; hx-target=&quot;this&quot; hx-swap=&quot;outerHTML&quot;&gt;&#10;  &lt;div&gt;&#10;    &lt;label&gt;First Name&lt;/label&gt;&#10;    &lt;input type=&quot;text&quot; name=&quot;firstName&quot; value=&quot;$(payload.firstName)&quot;/&gt;&#10;  &lt;/div&gt;&#10;  &lt;div class=&quot;form-group&quot;&gt;&#10;    &lt;label&gt;Last Name&lt;/label&gt;&#10;    &lt;input type=&quot;text&quot; name=&quot;lastName&quot; value=&quot;$(payload.lastName)&quot;/&gt;&#10;  &lt;/div&gt;&#10;  &lt;div class=&quot;form-group&quot;&gt;&#10;    &lt;label&gt;Email Address&lt;/label&gt;&#10;    &lt;input type=&quot;email&quot; name=&quot;email&quot; value=&quot;$(payload.email)&quot;/&gt;&#10;  &lt;/div&gt;&#10;  &lt;button class=&quot;btn&quot;&gt;Submit&lt;/button&gt;&#10;  &lt;button class=&quot;btn&quot; hx-get=&quot;/contact/1&quot;&gt;Cancel&lt;/button&gt;&#10;&lt;/form&gt;', 'application/xml')]" doc:name="Set Payload" doc:id="2220992b-778b-4950-8d40-995a4d9fafef" mimeType="text/html" />
+			</when>
+			<when expression='#[attributes.method == "PUT"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="3d92d7f5-b06a-4854-a1ac-a55913779d61" message="POST FORM" />
+				<os:store doc:name="contact" doc:id="74247ace-d90d-4c55-b089-a462593e3767" key="contact" failOnNullValue="false"/>
+				<set-payload value="#[output xml --- read('&lt;div hx-target=&quot;this&quot; hx-swap=&quot;outerHTML&quot;&gt;&#10;    &lt;div&gt;&lt;label&gt;First Name&lt;/label&gt;: $(payload.firstName)&lt;/div&gt;&#10;    &lt;div&gt;&lt;label&gt;Last Name&lt;/label&gt;: $(payload.lastName)&lt;/div&gt;&#10;    &lt;div&gt;&lt;label&gt;Email&lt;/label&gt;: $(payload.email) &lt;/div&gt;&#10;    &lt;button hx-get=&quot;/contact/1/edit&quot; class=&quot;btn btn-primary&quot;&gt;&#10;    Click To Edit&#10;    &lt;/button&gt;&#10;&lt;/div&gt;', 'application/xml')]" doc:name="Set Payload" doc:id="18a1c0ec-44f5-4d07-b2d5-136a300be222" mimeType="text/html" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="bae842a9-2708-4fbb-a3d7-e9b329991d5b" message="ERROR" />
+				<set-payload value='#["invalid params"]' doc:name="Set Payload" doc:id="7048f025-8ec7-44b1-8882-30fa961aec27" mimeType="text/html" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

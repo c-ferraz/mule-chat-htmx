@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello Chat</title>
+    <script src="http://localhost:#[p('http.resourcesPort')]/resources/js/htmx.min.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/class-tools.js"></script>
+    <link rel="icon" type="image/png" href="http://localhost:#[p('http.resourcesPort')]/favicon.ico" />
+    <style>
+        .demo.faded {
+            opacity: .3;
+        }
+        .demo {
+            opacity: 1;
+            transition: opacity ease-in 900ms;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Test</h1>
+    <div hx-target="this" hx-swap="outerHTML" hx-get="/contact/1/edit" hx-trigger="load">
+        <!-- <div><label>First Name</label>: Joe</div>
+        <div><label>Last Name</label>: Blow</div>
+        <div><label>Email</label>: joe@blow.com</div>
+        <button hx-get="/contact/1/edit" class="btn btn-primary">
+        Click To Edit
+        </button> -->
+    </div>
+    <!-- <div class="demo" classes="toggle faded:1s">Toggle Demo</div> -->
+</body>
+
+</html>

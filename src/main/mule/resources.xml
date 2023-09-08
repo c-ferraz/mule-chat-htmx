@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="load-resources-js" doc:id="f3fdfebf-004c-48cc-a7b9-eeeae86cf10c" >
+		<http:listener doc:name="GET /resources/js/{jsFileName}" doc:id="28a316e6-86e8-4b5c-a6b7-7fbe97651e1c" config-ref="resourcesHttpListenerConfig" path="/resources/js/{jsFileName}" allowedMethods="GET" primaryNodeOnly="true">
+			<non-repeatable-stream />
+		</http:listener>
+		<file:read doc:name="Read" doc:id="533b553c-34ad-4f2a-bf5b-71de59eab4fa" path='#["web\js\\$(attributes.uriParams.jsFileName)"]' outputMimeType="text/javascript" config-ref="resourcesFileConfig"/>
+	</flow>
+	<flow name="favicon" doc:id="cd1cdb86-c245-4def-b357-55beada1b018" >
+		<http:listener doc:name="/favicon.ico" doc:id="24507810-6629-4d2d-b1d0-cd977e45f827" config-ref="resourcesHttpListenerConfig" path="/favicon.ico" allowedMethods="GET"/>
+		<file:read doc:name="Read" doc:id="844b0f5b-9f32-4cf7-a898-7e32762cc046" config-ref="resourcesFileConfig" path='web\images\favicon.ico' outputMimeType="text/javascript" />
+	</flow>
+	
+</mule>

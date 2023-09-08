@@ -1,0 +1,3 @@
+http:
+  webPort: "8081"
+  resourcesPort: "8082"
