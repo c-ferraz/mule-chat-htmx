@@ -1,17 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:file="http://www.mulesoft.org/schema/mule/file"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:websocket="http://www.mulesoft.org/schema/mule/websocket" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
-http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
-	<flow name="simple-chat-htmxFlow" doc:id="212e1ca7-88ba-45ad-8011-f7a70c005e14" >
-		<http:listener doc:name="Listener" doc:id="1bb5f8fe-bdf8-47ad-b99f-1c157f62e0f7" path="/hello" config-ref="generalHttpListenerConfig"/>
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/websocket http://www.mulesoft.org/schema/mule/websocket/current/mule-websocket.xsd">
+	<flow name="load-main-page" doc:id="212e1ca7-88ba-45ad-8011-f7a70c005e14" >
+		<http:listener doc:name="Listener" doc:id="1bb5f8fe-bdf8-47ad-b99f-1c157f62e0f7" path="/hello" config-ref="httpListenerConfig"/>
 		<parse-template doc:name="Parse Template" doc:id="5a51da59-360a-438f-9ab1-2d112a5abd03" location="web/index.html"/>
 	</flow>
+	<flow name="join-create-selector" doc:id="ec5374f8-7f73-43bd-9921-72b331b0699f" >
+		<http:listener doc:name="Listener" doc:id="7b3ef058-2b3d-4201-90dc-17cc63ff2a02" config-ref="httpListenerConfig" path="/join-room">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers ><![CDATA[#[vars.outputHeaders default {}]]]></http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]" />
+		</http:listener>
+		<try doc:name="Try" doc:id="aedb4bc7-11d1-4708-890f-fe86ad38f375" >
+			<os:retrieve doc:name="Retrieve" doc:id="fc267be1-4a45-41d3-83f6-05405bf7a49e" objectStore="chatObjectStore" key="#[payload.chatroom]" target="chatroom">
+		</os:retrieve>
+			<error-handler >
+				<on-error-continue enableNotifications="false" logException="false" doc:name="On Error Continue" doc:id="353267ae-d6f1-4788-95eb-b46cf33b7b18" type="OS:KEY_NOT_FOUND"/>
+			</error-handler>
+		</try>
+		<choice doc:name="Choice" doc:id="51c9e19f-5dd7-4d5f-9759-4c02dec1c992" >
+			<when expression="#[isEmpty(vars.chatroom)]">
+				<flow-ref doc:name="create-chat-room" doc:id="e0b57580-abc4-4cb5-bdeb-cf46be5b7b70" name="create-chat-room"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="join-chat-room" doc:id="2352a996-737b-4bda-811a-d9565d0ce9e8" name="join-chat-room" />
+			</otherwise>
+		</choice>
+		<set-payload value="#[output xml --- read('&lt;div&gt;$(payload)&lt;/div&gt;', 'application/xml')]" doc:name="Set Payload" doc:id="4996f631-0606-49f6-8656-24fa141e2e63" mimeType="text/html" />
+	</flow>
+	<sub-flow name="create-chat-room" doc:id="f7298ad4-b62b-4f1f-a57b-92bb4589a227" >
+		<os:store doc:name="Store" doc:id="9efdcfac-98e9-417d-ab11-2b76bbf170c6" key="#[payload.chatroom]" objectStore="chatObjectStore">
+			<os:value ><![CDATA[#[{
+	id: uuid(),
+	password: payload.password
+}]]]></os:value>
+		</os:store>
+		<set-payload value='#["CREATED"]' doc:name="Set Payload" doc:id="38e4ddd3-b2a9-4cf3-8ce5-1a54fc507ee9" />
+	</sub-flow>
+	<sub-flow name="join-chat-room" doc:id="67d6d864-375d-4db9-acf0-ba56b8df84e1" >
+		<choice doc:name="Choice" doc:id="dd4c9a06-dbee-4b5b-9644-6ddba1d5b797" >
+			<when expression="#[payload.password == vars.chatroom.password]">
+				<set-payload value='#["LOGIN OK"]' doc:name="Set Payload" doc:id="b1cb6ee0-057a-4c9b-8510-865679300ce1" />
+			</when>
+			<otherwise >
+				<set-payload value='#["INVALID PASSWORD"]' doc:name="Set Payload" doc:id="d145d453-5a54-433b-a504-140dfc90f23f" />
+			</otherwise>
+		</choice>
+	</sub-flow>
 	<flow name="contact-form-get" doc:id="75397482-4f56-498d-8e8e-1cd2e811549d" >
-		<http:listener doc:name="Listener" doc:id="c09531ba-0e1e-4623-b6fb-d7025e443497" config-ref="generalHttpListenerConfig" path="/contact/*"/>
+		<http:listener doc:name="Listener" doc:id="c09531ba-0e1e-4623-b6fb-d7025e443497" config-ref="httpListenerConfig" path="/contact/*"/>
 		<choice doc:name="Choice" doc:id="98fbcdd5-18dd-4e8e-b5dc-42a967d4c368" >
 			<when expression='#[attributes.requestUri == "/contact/1" and attributes.method == "GET"]'>
 				<logger level="INFO" doc:name="Logger" doc:id="4f9773d9-40f5-4fe9-bad5-d69f73cb1cac" message="GET NO EDIT"/>

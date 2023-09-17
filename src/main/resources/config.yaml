@@ -1,3 +1,5 @@
+app:
+  hostName: "http://localhost:${http.port}"
+
 http:
-  webPort: "8081"
-  resourcesPort: "8082"
+  port: "8081"

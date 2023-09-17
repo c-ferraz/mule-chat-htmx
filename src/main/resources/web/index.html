@@ -3,31 +3,30 @@
 
 <head>
     <title>Hello Chat</title>
-    <script src="http://localhost:#[p('http.resourcesPort')]/resources/js/htmx.min.js"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/class-tools.js"></script>
-    <link rel="icon" type="image/png" href="http://localhost:#[p('http.resourcesPort')]/favicon.ico" />
-    <style>
-        .demo.faded {
-            opacity: .3;
-        }
-        .demo {
-            opacity: 1;
-            transition: opacity ease-in 900ms;
-        }
-    </style>
+    <script src="#[p('app.hostName')]/resources/js/htmx.min.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script>
+    <link rel="icon" type="image/png" href="p('app.hostName')]/favicon.ico" />
+    <!-- <script src="https://unpkg.com/htmx.org/dist/ext/class-tools.js"></script> -->
 </head>
 
 <body>
-    <h1>Test</h1>
-    <div hx-target="this" hx-swap="outerHTML" hx-get="/contact/1/edit" hx-trigger="load">
-        <!-- <div><label>First Name</label>: Joe</div>
-        <div><label>Last Name</label>: Blow</div>
-        <div><label>Email</label>: joe@blow.com</div>
-        <button hx-get="/contact/1/edit" class="btn btn-primary">
-        Click To Edit
-        </button> -->
+    <h1>Test Form</h1>
+    <!-- <div hx-target="this" hx-swap="outerHTML" hx-get="/contact/1/edit" hx-trigger="load"></div> -->
+    <div id="main" hx-swap="outerHTML">
+        <form hx-post="/join-room">
+            <label for="chatroom">Chatroom name:</label>
+            <input type="text" id="chatroom" name="chatroom"/><br/>
+            <label for="chat-password">Password</label>
+            <input type="password" id="chat-password" name="password"/><br/>
+            <button type="submit" 
+            hx-target-426="#main"
+            hx-target-403="#bad-pass">
+                Start chat
+            </button>
+        </form>
+        <div id="bad-pass"></div>
     </div>
-    <!-- <div class="demo" classes="toggle faded:1s">Toggle Demo</div> -->
 </body>
 
 </html>
