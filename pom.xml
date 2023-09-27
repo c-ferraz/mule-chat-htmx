@@ -29,6 +29,34 @@
 				<artifactId>mule-maven-plugin</artifactId>
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
+				<configuration>
+					<sharedLibraries>
+						<sharedLibrary>
+							<groupId>org.springframework.security</groupId>
+							<artifactId>spring-security-crypto</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-beans</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-context</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-core</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.springframework.security</groupId>
+							<artifactId>spring-security-config</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.springframework.security</groupId>
+							<artifactId>spring-security-core</artifactId>
+						</sharedLibrary>
+					</sharedLibraries>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -63,6 +91,42 @@
 			<artifactId>mule-objectstore-connector</artifactId>
 			<version>1.2.1</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-spring-module</artifactId>
+			<version>1.3.6</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+			<version>5.7.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>5.2.22.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>5.2.22.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>5.2.22.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>5.5.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>5.5.7</version>
 		</dependency>
 	</dependencies>
 

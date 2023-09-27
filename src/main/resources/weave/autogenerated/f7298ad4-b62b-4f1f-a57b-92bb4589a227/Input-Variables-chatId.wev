@@ -1,0 +1,5 @@
+%dw 2.0
+
+type auto_f7298ad4_b62b_4f1f_a57b_92bb4589a227_Input_Variables_chatId = {|  |} {"typeAlias": "Serializable",
+"typeId": "java.io.Serializable"}
+
